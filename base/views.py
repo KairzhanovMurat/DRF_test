@@ -3,6 +3,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from .serializers import MySerializer
 from rest_framework import status
+from rest_framework import viewsets
+
 
 # Create your views here.
 
@@ -25,11 +27,41 @@ class ProfileApi(APIView):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-    def put(self,request,pk=None):
-        return Response({'message':'this is put'})
+    def put(self, request, pk=None):
+        return Response({'message': 'this is put'})
 
-    def patch(self,request,pk=None):
-        return Response({'message':'this is patch'})
+    def patch(self, request, pk=None):
+        return Response({'message': 'this is patch'})
 
-    def delete(self,request,pk=None):
-        return Response({'message':'this is delete'})
+    def delete(self, request, pk=None):
+        return Response({'message': 'this is delete'})
+
+
+class MyViewSet(viewsets.ViewSet):
+    serializer_class = MySerializer
+
+    def list(self, request):
+        data = [f'item#{x}' for x in range(5)]
+        return Response({'data': data})
+
+    def create(self, request):
+        serializer = self.serializer_class(data=request.data)
+        if serializer.is_valid():
+            return Response({'message': f'hey {serializer.validated_data.get["name"]}'})
+        else:
+            return Response(
+                serializer.errors,
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+    def destroy(self, request, pk=None):
+        return Response({'message': 'destroyed smth'})
+
+    def update(self, request, pk=None):
+        return Response({'message': 'updated smth'})
+
+    def partial_update(self, request, pk=None):
+        return Response({'message': 'partially updated smth'})
+
+    def retrieve(self, request, pk=None):
+        return Response({'message': 'retrieved smth'})
