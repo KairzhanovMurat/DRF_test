@@ -1,9 +1,12 @@
-from django.shortcuts import render
-from rest_framework.views import APIView
-from rest_framework.response import Response
-from .serializers import MySerializer
 from rest_framework import status
 from rest_framework import viewsets
+from rest_framework.response import Response
+from rest_framework.views import APIView
+from . import permissions
+from rest_framework.authentication import TokenAuthentication
+from .serializers import MySerializer,UserSerializer
+from . import models
+
 
 
 # Create your views here.
@@ -65,3 +68,12 @@ class MyViewSet(viewsets.ViewSet):
 
     def retrieve(self, request, pk=None):
         return Response({'message': 'retrieved smth'})
+
+
+class UserViewSet(viewsets.ModelViewSet):
+    serializer_class = UserSerializer
+    queryset = models.MyUser.objects.all()
+    permission_classes = (permissions.MyPermission,)
+    authentication_classes = (TokenAuthentication, )
+
+
