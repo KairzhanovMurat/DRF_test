@@ -1,6 +1,8 @@
-from django.db import models
+from django.conf import settings
 from django.contrib.auth.models import AbstractBaseUser
 from django.contrib.auth.models import PermissionsMixin
+from django.db import models
+
 from .managers import MyUserManager
 
 
@@ -26,3 +28,12 @@ class MyUser(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.email
+
+
+class FeedItem(models.Model):
+    profile = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    date = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.status

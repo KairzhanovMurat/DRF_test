@@ -24,3 +24,12 @@ class UserSerializer(serializers.ModelSerializer):
             password=validated_data['password']
         )
         return new_user
+
+
+class FeedItemSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = models.FeedItem
+        fields = ('id', 'status', 'profile', 'date')
+        extra_kwargs = {
+            'profile': {'read_only': True}
+        }

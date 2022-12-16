@@ -3,13 +3,14 @@ from rest_framework import viewsets
 from rest_framework.authentication import TokenAuthentication
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.filters import SearchFilter
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.settings import api_settings
 from rest_framework.views import APIView
 
 from . import models
 from . import permissions
-from .serializers import MySerializer, UserSerializer
+from .serializers import MySerializer, UserSerializer, FeedItemSerializer
 
 
 # Create your views here.
@@ -76,7 +77,7 @@ class MyViewSet(viewsets.ViewSet):
 class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
     queryset = models.MyUser.objects.all()
-    permission_classes = (permissions.MyPermission,)
+    permission_classes = (permissions.MyPermission, IsAuthenticated)
     authentication_classes = (TokenAuthentication,)
     filter_backends = (SearchFilter,)
     search_fields = ('name', 'email')
@@ -84,3 +85,13 @@ class UserViewSet(viewsets.ModelViewSet):
 
 class AuthViewApi(ObtainAuthToken):
     renderer_classes = api_settings.DEFAULT_RENDERER_CLASSES
+
+
+class FeedItemView(viewsets.ModelViewSet):
+    serializer_class = FeedItemSerializer
+    queryset = models.FeedItem.objects.all()
+    authentication_classes = (TokenAuthentication,)
+    permission_classes = (IsAuthenticated, permissions.StatusPermission,)
+
+    def perform_create(self, serializer):
+        serializer.save(profile=self.request.user)
